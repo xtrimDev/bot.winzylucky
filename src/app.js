@@ -88,17 +88,17 @@ bot.command("admin", async function (ctx) {
             }
         } else {
             ctx.reply("Start game to access this bot", {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: "Play Game",
-                            url: process.env.TELE_WEB_APP_URL
-                        }
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
                     ]
-                ]
-            }
-        });
+                }
+            });
         }
     } else {
         resetLogoutTimeOut(ctx);
@@ -201,7 +201,7 @@ bot.on("text", async (ctx) => {
         }, 3000);
     } else if (changePasswordAccess && IsAdminLogged) {
         defaultSetting()
-        
+
         const salt = await bcrypt.genSalt(10);
         const newPassword = await bcrypt.hash(ctx.message.text, salt);
 
@@ -212,7 +212,7 @@ bot.on("text", async (ctx) => {
         } else {
             ctx.reply("some error occurred while changing the password");
         }
-        
+
         profileSettingMenu(ctx);
 
         adminDefaultSettings();
@@ -240,12 +240,12 @@ bot.on("text", async (ctx) => {
             })
 
             if (result) {
-                ctx.reply("Withdrawal Amount Successfully changed to : " + ctx.message.text);              
+                ctx.reply("Withdrawal Amount Successfully changed to : " + ctx.message.text);
             } else {
                 ctx.reply("some error occurred while changing the withdrawal amount");
             }
 
-            gameSettingMenu(ctx);  
+            gameSettingMenu(ctx);
             adminDefaultSettings();
         }
     } else if (changeDefaultSpinsAccess && IsAdminLogged) {
@@ -275,12 +275,12 @@ bot.on("text", async (ctx) => {
     } else if (addChannelAccess && IsAdminLogged) {
         defaultSetting();
 
-        let result = await db.collection("channels").findOne({username: ctx.message.text});
+        let result = await db.collection("channels").findOne({ username: ctx.message.text });
 
         if (!result) {
             let count = await db.collection("channels").countDocuments();
 
-            if (count > 0){
+            if (count > 0) {
                 count = 0;
             } else {
                 count = 1;
@@ -307,18 +307,18 @@ bot.on("text", async (ctx) => {
     } else if (removeChannelAccess && IsAdminLogged) {
         defaultSetting();
 
-        let result = await db.collection("channels").findOne({username: ctx.message.text});
+        let result = await db.collection("channels").findOne({ username: ctx.message.text });
 
         if (result) {
             result = await db.collection("channels").deleteOne({
                 username: ctx.message.text
             });
-    
+
             if (result) {
                 ctx.reply("Channel List updated Successfully");
                 await getChannelList(ctx);
                 await ctx.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id - 2);
-                    await ctx.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id - 1);
+                await ctx.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id - 1);
             } else {
                 ctx.reply("Something went wrong while updating channel list")
             }
@@ -330,7 +330,7 @@ bot.on("text", async (ctx) => {
     } else if (setPrimaryChannelAccess && IsAdminLogged) {
         defaultSetting();
 
-        let result = await db.collection("channels").findOne({username: ctx.message.text});
+        let result = await db.collection("channels").findOne({ username: ctx.message.text });
 
         if (result) {
             result = await db.collection("channels").updateMany({}, {
@@ -351,7 +351,7 @@ bot.on("text", async (ctx) => {
                 ctx.reply("Channel List updated Successfully");
                 await getChannelList(ctx);
                 await ctx.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id - 2);
-                    await ctx.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id - 1);
+                await ctx.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id - 1);
             } else {
                 ctx.reply("Something went wrong while updating channel list")
             }
@@ -389,17 +389,17 @@ bot.action("openAdminMenu", async (ctx) => {
             }
         } else {
             ctx.reply("Start game to access this bot", {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: "Play Game",
-                            url: process.env.TELE_WEB_APP_URL
-                        }
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
                     ]
-                ]
-            }
-        });
+                }
+            });
         }
     }
 });
@@ -442,17 +442,17 @@ bot.action("gameSettings", async (ctx) => {
             }
         } else {
             ctx.reply("Start game to access this bot", {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: "Play Game",
-                            url: process.env.TELE_WEB_APP_URL
-                        }
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
                     ]
-                ]
-            }
-        });
+                }
+            });
         }
     }
 });
@@ -482,17 +482,17 @@ bot.action("ProfileSetting", async (ctx) => {
             }
         } else {
             ctx.reply("Start game to access this bot", {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: "Play Game",
-                            url: process.env.TELE_WEB_APP_URL
-                        }
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
                     ]
-                ]
-            }
-        });
+                }
+            });
         }
     }
 });
@@ -522,17 +522,17 @@ bot.action("channelSettings", async (ctx) => {
             }
         } else {
             ctx.reply("Start game to access this bot", {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: "Play Game",
-                            url: process.env.TELE_WEB_APP_URL
-                        }
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
                     ]
-                ]
-            }
-        });
+                }
+            });
         }
     }
 });
@@ -564,17 +564,17 @@ bot.action("changePassword", async (ctx) => {
             }
         } else {
             ctx.reply("Start game to access this bot", {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: "Play Game",
-                            url: process.env.TELE_WEB_APP_URL
-                        }
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
                     ]
-                ]
-            }
-        });
+                }
+            });
         }
     }
 });
@@ -606,17 +606,17 @@ bot.action("changeWithdrawalAmount", async (ctx) => {
             }
         } else {
             ctx.reply("Start game to access this bot", {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: "Play Game",
-                            url: process.env.TELE_WEB_APP_URL
-                        }
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
                     ]
-                ]
-            }
-        });
+                }
+            });
         }
     }
 });
@@ -648,17 +648,17 @@ bot.action("changeDefaultSpins", async (ctx) => {
             }
         } else {
             ctx.reply("Start game to access this bot", {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: "Play Game",
-                            url: process.env.TELE_WEB_APP_URL
-                        }
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
                     ]
-                ]
-            }
-        });
+                }
+            });
         }
     }
 });
@@ -690,17 +690,17 @@ bot.action("withdrawalStatus", async (ctx) => {
             }
         } else {
             ctx.reply("Start game to access this bot", {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: "Play Game",
-                            url: process.env.TELE_WEB_APP_URL
-                        }
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
                     ]
-                ]
-            }
-        });
+                }
+            });
         }
     }
 });
@@ -747,17 +747,17 @@ bot.action("enableWithdrawalStatus", async (ctx) => {
             }
         } else {
             ctx.reply("Start game to access this bot", {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: "Play Game",
-                            url: process.env.TELE_WEB_APP_URL
-                        }
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
                     ]
-                ]
-            }
-        });
+                }
+            });
         }
     }
 })
@@ -805,17 +805,17 @@ bot.action("disableWithdrawalStatus", async (ctx) => {
             }
         } else {
             ctx.reply("Start game to access this bot", {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: "Play Game",
-                            url: process.env.TELE_WEB_APP_URL
-                        }
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
                     ]
-                ]
-            }
-        });
+                }
+            });
         }
     }
 })
@@ -846,17 +846,17 @@ bot.action("channelList", async (ctx) => {
             }
         } else {
             ctx.reply("Start game to access this bot", {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: "Play Game",
-                            url: process.env.TELE_WEB_APP_URL
-                        }
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
                     ]
-                ]
-            }
-        });
+                }
+            });
         }
     }
 });
@@ -882,17 +882,17 @@ bot.action("addChannel", async (ctx) => {
             }
         } else {
             ctx.reply("Start game to access this bot", {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: "Play Game",
-                            url: process.env.TELE_WEB_APP_URL
-                        }
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
                     ]
-                ]
-            }
-        });
+                }
+            });
         }
     }
 });
@@ -918,17 +918,17 @@ bot.action("removeChannel", async (ctx) => {
             }
         } else {
             ctx.reply("Start game to access this bot", {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: "Play Game",
-                            url: process.env.TELE_WEB_APP_URL
-                        }
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
                     ]
-                ]
-            }
-        });
+                }
+            });
         }
     }
 });
@@ -954,17 +954,17 @@ bot.action("selectPrimary", async (ctx) => {
             }
         } else {
             ctx.reply("Start game to access this bot", {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: "Play Game",
-                            url: process.env.TELE_WEB_APP_URL
-                        }
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
                     ]
-                ]
-            }
-        });
+                }
+            });
         }
     }
 });
@@ -1015,17 +1015,17 @@ const adminMenu = async (ctx) => {
             }
         } else {
             ctx.reply("Start game to access this bot", {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: "Play Game",
-                            url: process.env.TELE_WEB_APP_URL
-                        }
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
                     ]
-                ]
-            }
-        });
+                }
+            });
         }
     }
 }
@@ -1064,17 +1064,17 @@ const profileSettingMenu = async (ctx) => {
             }
         } else {
             ctx.reply("Start game to access this bot", {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: "Play Game",
-                            url: process.env.TELE_WEB_APP_URL
-                        }
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
                     ]
-                ]
-            }
-        });
+                }
+            });
         }
     }
 }
@@ -1131,17 +1131,17 @@ const gameSettingMenu = async (ctx) => {
             }
         } else {
             ctx.reply("Start game to access this bot", {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: "Play Game",
-                            url: process.env.TELE_WEB_APP_URL
-                        }
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
                     ]
-                ]
-            }
-        });
+                }
+            });
         }
     }
 }
@@ -1186,17 +1186,17 @@ const withdrawalStatusMenu = async (ctx) => {
             }
         } else {
             ctx.reply("Start game to access this bot", {
-            reply_markup: {
-                inline_keyboard: [
-                    [
-                        {
-                            text: "Play Game",
-                            url: process.env.TELE_WEB_APP_URL
-                        }
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
                     ]
-                ]
-            }
-        });
+                }
+            });
         }
     }
 }
@@ -1234,10 +1234,11 @@ async function createChannelListTable(channelData) {
 async function getChannelList(ctx) {
     const result = await db.collection("channels").find({}).toArray();
 
-        if (result.length > 0) {
-            const channelListTable = await createChannelListTable(result);
+    if (result.length > 0) {
+        const channelListTable = await createChannelListTable(result);
 
-            ctx.reply(`\`\`\`\n${channelListTable}\n\`\`\``, { parse_mode: 'MarkdownV2',  reply_markup: {
+        ctx.reply(`\`\`\`\n${channelListTable}\n\`\`\``, {
+            parse_mode: 'MarkdownV2', reply_markup: {
                 inline_keyboard: [
                     [
                         {
@@ -1262,11 +1263,29 @@ async function getChannelList(ctx) {
                         }
                     ]
                 ]
-            } });
-        } else {
-            ctx.reply("No channel found");
-        }
-} 
+            }
+        });
+    } else {
+        ctx.reply("No channel found", {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "add",
+                            callback_data: "addChannel"
+                        }
+                    ],
+                    [
+                        {
+                            text: "Go Back",
+                            callback_data: "openAdminMenu"
+                        }
+                    ]
+                ]
+            }
+        });
+    }
+}
 
 bot.launch().then(() => {
     console.log('Bot is up and running...');
