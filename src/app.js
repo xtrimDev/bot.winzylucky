@@ -54,7 +54,18 @@ bot.start((ctx) => {
         adminMenu(ctx);
         resetLogoutTimeOut(ctx);
     } else {
-        ctx.reply(`Hello ${ctx.from.first_name}, \nSpin and earn your money by referring friends.`);
+        ctx.reply(`Hello ${ctx.from.first_name}, \nSpin and earn your money by referring friends.`, {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "Play Game",
+                            url: process.env.TELE_WEB_APP_URL
+                        }
+                    ]
+                ]
+            }
+        });
     }
 
     defaultSetting();
@@ -76,7 +87,18 @@ bot.command("admin", async function (ctx) {
                 ctx.reply("You are not an admin");
             }
         } else {
-            ctx.reply("Start game to access this bot");
+            ctx.reply("Start game to access this bot", {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "Play Game",
+                            url: process.env.TELE_WEB_APP_URL
+                        }
+                    ]
+                ]
+            }
+        });
         }
     } else {
         resetLogoutTimeOut(ctx);
@@ -366,7 +388,18 @@ bot.action("openAdminMenu", async (ctx) => {
                 ctx.reply("You are not an admin");
             }
         } else {
-            ctx.reply("Start game to access this bot");
+            ctx.reply("Start game to access this bot", {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "Play Game",
+                            url: process.env.TELE_WEB_APP_URL
+                        }
+                    ]
+                ]
+            }
+        });
         }
     }
 });
@@ -408,7 +441,18 @@ bot.action("gameSettings", async (ctx) => {
                 ctx.reply("You are not an admin");
             }
         } else {
-            ctx.reply("Start game to access this bot");
+            ctx.reply("Start game to access this bot", {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "Play Game",
+                            url: process.env.TELE_WEB_APP_URL
+                        }
+                    ]
+                ]
+            }
+        });
         }
     }
 });
@@ -437,7 +481,18 @@ bot.action("ProfileSetting", async (ctx) => {
                 ctx.reply("You are not an admin");
             }
         } else {
-            ctx.reply("Start game to access this bot");
+            ctx.reply("Start game to access this bot", {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "Play Game",
+                            url: process.env.TELE_WEB_APP_URL
+                        }
+                    ]
+                ]
+            }
+        });
         }
     }
 });
@@ -466,7 +521,18 @@ bot.action("channelSettings", async (ctx) => {
                 ctx.reply("You are not an admin");
             }
         } else {
-            ctx.reply("Start game to access this bot");
+            ctx.reply("Start game to access this bot", {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "Play Game",
+                            url: process.env.TELE_WEB_APP_URL
+                        }
+                    ]
+                ]
+            }
+        });
         }
     }
 });
@@ -497,7 +563,18 @@ bot.action("changePassword", async (ctx) => {
                 ctx.reply("You are not an admin");
             }
         } else {
-            ctx.reply("Start game to access this bot");
+            ctx.reply("Start game to access this bot", {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "Play Game",
+                            url: process.env.TELE_WEB_APP_URL
+                        }
+                    ]
+                ]
+            }
+        });
         }
     }
 });
@@ -528,7 +605,18 @@ bot.action("changeWithdrawalAmount", async (ctx) => {
                 ctx.reply("You are not an admin");
             }
         } else {
-            ctx.reply("Start game to access this bot");
+            ctx.reply("Start game to access this bot", {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "Play Game",
+                            url: process.env.TELE_WEB_APP_URL
+                        }
+                    ]
+                ]
+            }
+        });
         }
     }
 });
@@ -559,7 +647,18 @@ bot.action("changeDefaultSpins", async (ctx) => {
                 ctx.reply("You are not an admin");
             }
         } else {
-            ctx.reply("Start game to access this bot");
+            ctx.reply("Start game to access this bot", {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "Play Game",
+                            url: process.env.TELE_WEB_APP_URL
+                        }
+                    ]
+                ]
+            }
+        });
         }
     }
 });
@@ -590,7 +689,18 @@ bot.action("withdrawalStatus", async (ctx) => {
                 ctx.reply("You are not an admin");
             }
         } else {
-            ctx.reply("Start game to access this bot");
+            ctx.reply("Start game to access this bot", {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "Play Game",
+                            url: process.env.TELE_WEB_APP_URL
+                        }
+                    ]
+                ]
+            }
+        });
         }
     }
 });
@@ -636,7 +746,18 @@ bot.action("enableWithdrawalStatus", async (ctx) => {
                 ctx.reply("You are not an admin");
             }
         } else {
-            ctx.reply("Start game to access this bot");
+            ctx.reply("Start game to access this bot", {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "Play Game",
+                            url: process.env.TELE_WEB_APP_URL
+                        }
+                    ]
+                ]
+            }
+        });
         }
     }
 })
@@ -683,7 +804,18 @@ bot.action("disableWithdrawalStatus", async (ctx) => {
                 ctx.reply("You are not an admin");
             }
         } else {
-            ctx.reply("Start game to access this bot");
+            ctx.reply("Start game to access this bot", {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "Play Game",
+                            url: process.env.TELE_WEB_APP_URL
+                        }
+                    ]
+                ]
+            }
+        });
         }
     }
 })
@@ -713,7 +845,18 @@ bot.action("channelList", async (ctx) => {
                 ctx.reply("You are not an admin");
             }
         } else {
-            ctx.reply("Start game to access this bot");
+            ctx.reply("Start game to access this bot", {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "Play Game",
+                            url: process.env.TELE_WEB_APP_URL
+                        }
+                    ]
+                ]
+            }
+        });
         }
     }
 });
@@ -738,7 +881,18 @@ bot.action("addChannel", async (ctx) => {
                 ctx.reply("You are not an admin");
             }
         } else {
-            ctx.reply("Start game to access this bot");
+            ctx.reply("Start game to access this bot", {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "Play Game",
+                            url: process.env.TELE_WEB_APP_URL
+                        }
+                    ]
+                ]
+            }
+        });
         }
     }
 });
@@ -763,7 +917,18 @@ bot.action("removeChannel", async (ctx) => {
                 ctx.reply("You are not an admin");
             }
         } else {
-            ctx.reply("Start game to access this bot");
+            ctx.reply("Start game to access this bot", {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "Play Game",
+                            url: process.env.TELE_WEB_APP_URL
+                        }
+                    ]
+                ]
+            }
+        });
         }
     }
 });
@@ -788,7 +953,18 @@ bot.action("selectPrimary", async (ctx) => {
                 ctx.reply("You are not an admin");
             }
         } else {
-            ctx.reply("Start game to access this bot");
+            ctx.reply("Start game to access this bot", {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "Play Game",
+                            url: process.env.TELE_WEB_APP_URL
+                        }
+                    ]
+                ]
+            }
+        });
         }
     }
 });
@@ -838,7 +1014,18 @@ const adminMenu = async (ctx) => {
                 ctx.reply("You are not an admin");
             }
         } else {
-            ctx.reply("Start game to access this bot");
+            ctx.reply("Start game to access this bot", {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "Play Game",
+                            url: process.env.TELE_WEB_APP_URL
+                        }
+                    ]
+                ]
+            }
+        });
         }
     }
 }
@@ -876,7 +1063,18 @@ const profileSettingMenu = async (ctx) => {
                 ctx.reply("You are not an admin");
             }
         } else {
-            ctx.reply("Start game to access this bot");
+            ctx.reply("Start game to access this bot", {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "Play Game",
+                            url: process.env.TELE_WEB_APP_URL
+                        }
+                    ]
+                ]
+            }
+        });
         }
     }
 }
@@ -932,7 +1130,18 @@ const gameSettingMenu = async (ctx) => {
                 ctx.reply("You are not an admin");
             }
         } else {
-            ctx.reply("Start game to access this bot");
+            ctx.reply("Start game to access this bot", {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "Play Game",
+                            url: process.env.TELE_WEB_APP_URL
+                        }
+                    ]
+                ]
+            }
+        });
         }
     }
 }
@@ -976,7 +1185,18 @@ const withdrawalStatusMenu = async (ctx) => {
                 ctx.reply("You are not an admin");
             }
         } else {
-            ctx.reply("Start game to access this bot");
+            ctx.reply("Start game to access this bot", {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "Play Game",
+                            url: process.env.TELE_WEB_APP_URL
+                        }
+                    ]
+                ]
+            }
+        });
         }
     }
 }
