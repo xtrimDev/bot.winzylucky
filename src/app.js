@@ -1,7 +1,6 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const { Telegraf } = require('telegraf');
 const bcrypt = require("bcrypt");
-const { inlineKeyboard } = require('telegraf/markup');
 
 require("dotenv").config();
 
