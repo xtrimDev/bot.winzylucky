@@ -25,6 +25,11 @@ let changeDefaultSpinsAccess = false;
 let addChannelAccess = false;
 let removeChannelAccess = false;
 let setPrimaryChannelAccess = false;
+let isRunning = false;
+
+const defaultRunning = () => {
+    isRunning = false;
+}
 
 const defaultSetting = () => {
     IsPassword = false;
@@ -390,6 +395,12 @@ bot.action("openAdminMenu", async (ctx) => {
     defaultSetting();
     adminDefaultSettings();
 
+    if (isRunning) {
+        return;
+    } else {
+        isRunning = true;
+    }
+
     try {
         ctx.deleteMessage();
     } catch {
@@ -425,11 +436,19 @@ bot.action("openAdminMenu", async (ctx) => {
             });
         }
     }
+
+    isRunning = false;
 });
 
 bot.action("logout", (ctx) => {
     defaultSetting();
     adminDefaultSettings();
+
+    if (isRunning) {
+        return;
+    } else {
+        isRunning = true;
+    }
 
     if (IsAdminLogged) {
         clearTimeout(resetLogoutTimeOut)
@@ -438,11 +457,19 @@ bot.action("logout", (ctx) => {
     } else {
         ctx.reply("Your are not logged in.")
     }
+
+    isRunning = false;
 })
 
 bot.action("gameSettings", async (ctx) => {
     defaultSetting();
     adminDefaultSettings();
+
+    if (isRunning) {
+        return;
+    } else {
+        isRunning = true;
+    }
 
     try {
         ctx.deleteMessage();
@@ -478,11 +505,19 @@ bot.action("gameSettings", async (ctx) => {
             });
         }
     }
+
+    isRunning = false;
 });
 
 bot.action("ProfileSetting", async (ctx) => {
     defaultSetting();
     adminDefaultSettings();
+
+    if (isRunning) {
+        return;
+    } else {
+        isRunning = true;
+    }
 
     try {
         ctx.deleteMessage();
@@ -518,11 +553,19 @@ bot.action("ProfileSetting", async (ctx) => {
             });
         }
     }
+
+    isRunning = false;
 });
 
 bot.action("channelSettings", async (ctx) => {
     defaultSetting();
     adminDefaultSettings();
+
+    if (isRunning) {
+        return;
+    } else {
+        isRunning = true;
+    }
 
     try {
         ctx.deleteMessage();
@@ -558,11 +601,19 @@ bot.action("channelSettings", async (ctx) => {
             });
         }
     }
+
+    isRunning = false;
 });
 
 bot.action("changePassword", async (ctx) => {
     defaultSetting();
     adminDefaultSettings();
+
+    if (isRunning) {
+        return;
+    } else {
+        isRunning = true;
+    }
 
     try {
         ctx.deleteMessage();
@@ -600,11 +651,19 @@ bot.action("changePassword", async (ctx) => {
             });
         }
     }
+
+    isRunning = false;
 });
 
 bot.action("changeWithdrawalAmount", async (ctx) => {
     defaultSetting();
     adminDefaultSettings();
+
+    if (isRunning) {
+        return;
+    } else {
+        isRunning = true;
+    }
 
     try {
         ctx.deleteMessage();
@@ -642,11 +701,19 @@ bot.action("changeWithdrawalAmount", async (ctx) => {
             });
         }
     }
+
+    isRunning = false;
 });
 
 bot.action("changeDefaultSpins", async (ctx) => {
     defaultSetting();
     adminDefaultSettings();
+
+    if (isRunning) {
+        return;
+    } else {
+        isRunning = true;
+    }
 
     try {
         ctx.deleteMessage();
@@ -684,11 +751,19 @@ bot.action("changeDefaultSpins", async (ctx) => {
             });
         }
     }
+
+    isRunning = false
 });
 
 bot.action("withdrawalStatus", async (ctx) => {
     defaultSetting();
     adminDefaultSettings();
+
+    if (isRunning) {
+        return;
+    } else {
+        isRunning = true;
+    }
 
     try {
         ctx.deleteMessage();
@@ -726,11 +801,19 @@ bot.action("withdrawalStatus", async (ctx) => {
             });
         }
     }
+
+    isRunning = false
 });
 
 bot.action("enableWithdrawalStatus", async (ctx) => {
     defaultSetting();
     adminDefaultSettings();
+
+    if (isRunning) {
+        return;
+    } else {
+        isRunning = true;
+    }
 
     try {
         ctx.deleteMessage();
@@ -783,11 +866,19 @@ bot.action("enableWithdrawalStatus", async (ctx) => {
             });
         }
     }
+
+    isRunning = false;
 })
 
 bot.action("disableWithdrawalStatus", async (ctx) => {
     defaultSetting();
     adminDefaultSettings();
+
+    if (isRunning) {
+        return;
+    } else {
+        isRunning = true;
+    }
 
     try {
         ctx.deleteMessage();
@@ -841,12 +932,20 @@ bot.action("disableWithdrawalStatus", async (ctx) => {
             });
         }
     }
+
+    isRunning = false;
 })
 
 
 bot.action("transactionSetting", async (ctx) => {
     defaultSetting();
     adminDefaultSettings();
+
+    if (isRunning) {
+        return;
+    } else {
+        isRunning = true;
+    }
 
     try {
         ctx.deleteMessage();
@@ -882,11 +981,19 @@ bot.action("transactionSetting", async (ctx) => {
             });
         }
     }
+
+    isRunning = false;
 });
 
 bot.action("channelList", async (ctx) => {
     defaultSetting();
     adminDefaultSettings();
+
+    if (isRunning) {
+        return;
+    } else {
+        isRunning = true;
+    }
 
     try {
         ctx.deleteMessage();
@@ -923,11 +1030,19 @@ bot.action("channelList", async (ctx) => {
             });
         }
     }
+
+    isRunning = false;
 });
 
 bot.action("addChannel", async (ctx) => {
     defaultSetting();
     adminDefaultSettings();
+
+    if (isRunning) {
+        return;
+    } else {
+        isRunning = true;
+    }
 
     if (IsAdminLogged) {
         resetLogoutTimeOut(ctx);
@@ -959,11 +1074,19 @@ bot.action("addChannel", async (ctx) => {
             });
         }
     }
+
+    isRunning = false;
 });
 
 bot.action("removeChannel", async (ctx) => {
     defaultSetting();
     adminDefaultSettings();
+
+    if (isRunning) {
+        return;
+    } else {
+        isRunning = true;
+    }
 
     if (IsAdminLogged) {
         resetLogoutTimeOut(ctx);
@@ -995,11 +1118,19 @@ bot.action("removeChannel", async (ctx) => {
             });
         }
     }
+
+    isRunning = false;
 });
 
 bot.action("selectPrimary", async (ctx) => {
     defaultSetting();
     adminDefaultSettings();
+
+    if (isRunning) {
+        return;
+    } else {
+        isRunning = true;
+    }
 
     if (IsAdminLogged) {
         resetLogoutTimeOut(ctx);
@@ -1031,6 +1162,8 @@ bot.action("selectPrimary", async (ctx) => {
             });
         }
     }
+
+    isRunning = false;
 });
 
 const adminMenu = async (ctx) => {
