@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, Transaction } = require('mongodb');
 const { Telegraf } = require('telegraf');
 const bcrypt = require("bcrypt");
 
@@ -294,8 +294,16 @@ bot.on("text", async (ctx) => {
             if (result) {
                 ctx.reply("Channel List updated Successfully");
                 await getChannelList(ctx);
-                await ctx.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id - 2);
-                await ctx.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id - 1);
+                try {
+                    await ctx.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id - 2);
+                } catch {
+                    /** do nothing */
+                }
+                try {
+                    await ctx.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id - 1);
+                } catch {
+                    /** do nothing */
+                }
             } else {
                 ctx.reply("Something went wrong while updating channel list")
             }
@@ -316,8 +324,16 @@ bot.on("text", async (ctx) => {
             if (result) {
                 ctx.reply("Channel List updated Successfully");
                 await getChannelList(ctx);
-                await ctx.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id - 2);
-                await ctx.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id - 1);
+                try {
+                    await ctx.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id - 2);
+                } catch {
+                    /** do nothing */
+                }
+                try {
+                    await ctx.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id - 1);
+                } catch {
+                    /** do nothing */
+                }
             } else {
                 ctx.reply("Something went wrong while updating channel list")
             }
@@ -349,8 +365,16 @@ bot.on("text", async (ctx) => {
             if (result) {
                 ctx.reply("Channel List updated Successfully");
                 await getChannelList(ctx);
-                await ctx.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id - 2);
-                await ctx.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id - 1);
+                try {
+                    await ctx.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id - 2);
+                } catch {
+                    /** do nothing */
+                }
+                try {
+                    await ctx.telegram.deleteMessage(ctx.chat.id, ctx.message.message_id - 1);
+                } catch {
+                    /** do nothing */
+                }
             } else {
                 ctx.reply("Something went wrong while updating channel list")
             }
@@ -819,6 +843,47 @@ bot.action("disableWithdrawalStatus", async (ctx) => {
     }
 })
 
+
+bot.action("transactionSetting", async (ctx) => {
+    defaultSetting();
+    adminDefaultSettings();
+
+    try {
+        ctx.deleteMessage();
+    } catch {
+        /** do nothing */
+    }
+
+    if (IsAdminLogged) {
+        resetLogoutTimeOut(ctx);
+        getPendingTransactionListLast10(ctx);
+    } else {
+        const result = await db.collection("users").findOne({ u_Id: ctx.chat.id });
+
+        if (result) {
+            if (result.type == "1") {
+                ctx.reply("Enter your Password to continue");
+                IsPassword = true;
+            } else {
+                ctx.reply("You are not an admin");
+            }
+        } else {
+            ctx.reply("Start game to access this bot", {
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
+                    ]
+                }
+            });
+        }
+    }
+});
+
 bot.action("channelList", async (ctx) => {
     defaultSetting();
     adminDefaultSettings();
@@ -1106,7 +1171,7 @@ const gameSettingMenu = async (ctx) => {
                     [
                         {
                             text: "Transactions",
-                            callback_data: "transaction"
+                            callback_data: "transactionSetting"
                         }
                     ],
                     [
@@ -1278,6 +1343,89 @@ async function getChannelList(ctx) {
                         {
                             text: "Go Back",
                             callback_data: "openAdminMenu"
+                        }
+                    ]
+                ]
+            }
+        });
+    }
+}
+
+async function createPendingTransactionListLast10Table(transactionData) {
+
+    const ID_WIDTH = 4;//
+    const STATUS_WIDTH = 10;//
+    const TRANSACTION_BY_WIDTH = 15;//
+    const UPI_ID_WIDTH = 15;//
+    const AMOUNT_WIDTH = 10;//
+    const TABLE_BORDER_CHAR = '-';
+
+    // Adjust separator width according to new column widths
+    const TABLE_SEPARATOR_WIDTH = ID_WIDTH + UPI_ID_WIDTH + AMOUNT_WIDTH + STATUS_WIDTH + TRANSACTION_BY_WIDTH + 5;
+
+    let table = '';
+
+    // Header row
+    table += `#${' '.repeat(ID_WIDTH)}UPI ID${' '.repeat(UPI_ID_WIDTH - 'UPI ID'.length)}Amount${' '.repeat(AMOUNT_WIDTH - 'Amount'.length)}Status${' '.repeat(STATUS_WIDTH - 'Status'.length)}Transaction by\n`;
+    table += TABLE_BORDER_CHAR.repeat(TABLE_SEPARATOR_WIDTH) + '\n';
+
+    let i = 1;
+    for (const transaction of transactionData) {
+        try {
+            // Fetch user details
+            const userData = await db.collection("users").findOne({_id: transaction.transactionBy});
+
+            const dataX = await db.collection("users").find({_id: transaction.transactionBy}).toArray();
+
+            let userName;
+
+            if (userData) {
+                userName = userData.name 
+            } else {
+                userName = "Unknown"
+            }
+
+            // Append transaction information to scltable
+            table += `${i.toString().padEnd(ID_WIDTH)}${transaction.upiId.toString().padEnd(UPI_ID_WIDTH)}${transaction.amount.toString().padEnd(AMOUNT_WIDTH)}${transaction.status.toString().padEnd(STATUS_WIDTH)}${userName.toString().padEnd(TRANSACTION_BY_WIDTH)}\n`;
+            i++;
+        } catch (error) {
+            console.error('Error fetching user details:', error);
+            table += `${i.toString().padEnd(ID_WIDTH)}${transaction.upiId.toString().padEnd(UPI_ID_WIDTH)}${transaction.amount.toString().padEnd(AMOUNT_WIDTH)}${transaction.status.toString().padEnd(STATUS_WIDTH)}Unknown\n`;
+            i++;
+        }
+    }
+
+    return table;
+}
+
+async function getPendingTransactionListLast10(ctx) {
+    const result = await db.collection("transactions").find({ status: "pending" }).sort({ createdAt: 1 }).limit(5).toArray();
+
+    if (result.length > 0) {
+        const transactionList = await createPendingTransactionListLast10Table(result);
+
+        ctx.reply(`\`\`\`\n${transactionList}\n\`\`\``, {
+            parse_mode: 'MarkdownV2',
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        { text: "Success", callback_data: "Success" },
+                        { text: "Failed", callback_data: "Failed" }
+                    ],
+                    [
+                        { text: "Go Back", callback_data: "gameSettings" }
+                    ]
+                ]
+            }
+        });
+    } else {
+        ctx.reply("No Pending Transaction found", {
+            reply_markup: {
+                inline_keyboard: [
+                    [
+                        {
+                            text: "Go Back",
+                            callback_data: "gameSettings"
                         }
                     ]
                 ]
