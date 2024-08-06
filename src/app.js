@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion, Transaction } = require('mongodb');
+const { MongoClient, ServerApiVersion, Transaction, ObjectId } = require('mongodb');
 const { Telegraf } = require('telegraf');
 const bcrypt = require("bcrypt");
 
@@ -26,6 +26,9 @@ let addChannelAccess = false;
 let removeChannelAccess = false;
 let setPrimaryChannelAccess = false;
 let isRunning = false;
+let addSuccessTransaction = false;
+let addFailedTransaction = false;
+let transactionIdMsg = false;
 
 const defaultRunning = () => {
     isRunning = false;
@@ -35,6 +38,10 @@ const defaultSetting = () => {
     IsPassword = false;
 }
 
+/********************* */
+let transactionData = {};
+/********************* */
+
 const adminDefaultSettings = () => {
     changePasswordAccess = false;
     changeWithdrawalAmountAccess = false;
@@ -43,6 +50,9 @@ const adminDefaultSettings = () => {
     addChannelAccess = false;
     removeChannelAccess = false;
     setPrimaryChannelAccess = false;
+    addSuccessTransaction = false;
+    addFailedTransaction = false;
+    transactionIdMsg = false;
 }
 
 const resetLogoutTimeOut = (ctx) => {
@@ -388,6 +398,79 @@ bot.on("text", async (ctx) => {
         } else {
             ctx.reply("**The channel name you entered does not exist. Enter again")
         }
+    } else if (addSuccessTransaction && IsAdminLogged) {
+        defaultSetting();
+
+        const text = ctx.message.text;
+
+        if (text > 0 && text <= transactionData.length) {
+            let result = await db.collection("transactions").findOneAndUpdate({ _id: transactionData[text-1]._id }, {
+                $set : {
+                    status: "success"
+                }
+            });
+
+            adminDefaultSettings();
+
+            if (result) {
+                ctx.reply("Enter the Transaction Id");
+                
+                transactionIdMsg = (text);
+            } else {
+                ctx.reply("**Something went wrong.");
+                getPendingTransactionListLast10(ctx)
+            }
+        } else {
+            ctx.reply ("Enter a Valid # id.");
+        }
+    } else if (addFailedTransaction && IsAdminLogged) {
+        defaultSetting();
+
+        const text = ctx.message.text;
+
+        if (text > 0 && text <= transactionData.length) {
+            let result = await db.collection("transactions").findOneAndUpdate({ _id: transactionData[text-1]._id }, {
+                $set : {
+                    status: "failed"
+                }
+            });
+
+            result = await db.collection("spinsandrefers").updateOne({userId: transactionData[text-1].transactionBy}, {
+                $inc : {
+                    totalEarnings: transactionData[text-1].amount
+                }
+            });
+
+            adminDefaultSettings();
+
+            if (result) {
+                ctx.reply("Enter the Transaction Failure message");
+                
+                transactionIdMsg = (text);
+            } else {
+                ctx.reply("**Something went wrong.");
+                getPendingTransactionListLast10(ctx)
+            }
+        } else {
+            ctx.reply ("Enter a Valid # id.");
+        }
+    } else if (transactionIdMsg && IsAdminLogged) {
+        defaultSetting();
+
+        let result = await db.collection("transactions").findOneAndUpdate({ _id: transactionData[transactionIdMsg-1]._id }, {
+            $set : {
+                failureStatus: ctx.message.text
+            }
+        });
+
+        if (result) {
+            ctx.reply("Transaction Message saved.");
+        } else {
+            ctx.reply("**Something went wrong.");
+        }
+        adminDefaultSettings();
+
+        getPendingTransactionListLast10(ctx)
     }
 });
 
@@ -396,17 +479,10 @@ bot.action("openAdminMenu", async (ctx) => {
     adminDefaultSettings();
 
     if (isRunning) {
-        return;
+        return false;
     } else {
         isRunning = true;
     }
-
-    try {
-        ctx.deleteMessage();
-    } catch {
-        /** do nothing */
-    }
-
 
     if (IsAdminLogged) {
         adminMenu(ctx);
@@ -445,7 +521,7 @@ bot.action("logout", (ctx) => {
     adminDefaultSettings();
 
     if (isRunning) {
-        return;
+        return false;
     } else {
         isRunning = true;
     }
@@ -465,48 +541,47 @@ bot.action("gameSettings", async (ctx) => {
     defaultSetting();
     adminDefaultSettings();
 
-    if (isRunning) {
-        return;
-    } else {
-        isRunning = true;
-    }
-
     try {
-        ctx.deleteMessage();
-    } catch {
-        /** do nothing */
-    }
-
-    if (IsAdminLogged) {
-        resetLogoutTimeOut(ctx);
-        gameSettingMenu(ctx);
-    } else {
-        const result = await db.collection("users").findOne({ u_Id: ctx.chat.id });
-
-        if (result) {
-            if (result.type == "1") {
-                ctx.reply("Enter your Password to continue");
-                IsPassword = true;
-            } else {
-                ctx.reply("You are not an admin");
-            }
+        if (isRunning) {
+            return false;
         } else {
-            ctx.reply("Start game to access this bot", {
-                reply_markup: {
-                    inline_keyboard: [
-                        [
-                            {
-                                text: "Play Game",
-                                url: process.env.TELE_WEB_APP_URL
-                            }
-                        ]
-                    ]
-                }
-            });
+            isRunning = true;
         }
+    
+        if (IsAdminLogged) {
+            resetLogoutTimeOut(ctx);
+            gameSettingMenu(ctx);
+        } else {
+            const result = await db.collection("users").findOne({ u_Id: ctx.chat.id });
+    
+            if (result) {
+                if (result.type == "1") {
+                    ctx.reply("Enter your Password to continue");
+                    IsPassword = true;
+                } else {
+                    ctx.reply("You are not an admin");
+                }
+            } else {
+                ctx.reply("Start game to access this bot", {
+                    reply_markup: {
+                        inline_keyboard: [
+                            [
+                                {
+                                    text: "Play Game",
+                                    url: process.env.TELE_WEB_APP_URL
+                                }
+                            ]
+                        ]
+                    }
+                });
+            }
+        }
+    
+        isRunning = false;
+    } catch(error) {
+        console.log(error)
+        console.log("Some")
     }
-
-    isRunning = false;
 });
 
 bot.action("ProfileSetting", async (ctx) => {
@@ -514,15 +589,9 @@ bot.action("ProfileSetting", async (ctx) => {
     adminDefaultSettings();
 
     if (isRunning) {
-        return;
+        return false;
     } else {
         isRunning = true;
-    }
-
-    try {
-        ctx.deleteMessage();
-    } catch {
-        /** do nothing */
     }
 
     if (IsAdminLogged) {
@@ -562,15 +631,9 @@ bot.action("channelSettings", async (ctx) => {
     adminDefaultSettings();
 
     if (isRunning) {
-        return;
+        return false;
     } else {
         isRunning = true;
-    }
-
-    try {
-        ctx.deleteMessage();
-    } catch {
-        /** do nothing */
     }
 
     if (IsAdminLogged) {
@@ -610,15 +673,9 @@ bot.action("changePassword", async (ctx) => {
     adminDefaultSettings();
 
     if (isRunning) {
-        return;
+        return false;
     } else {
         isRunning = true;
-    }
-
-    try {
-        ctx.deleteMessage();
-    } catch {
-        /** do nothing */
     }
 
     if (IsAdminLogged) {
@@ -660,15 +717,9 @@ bot.action("changeWithdrawalAmount", async (ctx) => {
     adminDefaultSettings();
 
     if (isRunning) {
-        return;
+        return false;
     } else {
         isRunning = true;
-    }
-
-    try {
-        ctx.deleteMessage();
-    } catch {
-        /** do nothing */
     }
 
     if (IsAdminLogged) {
@@ -710,15 +761,9 @@ bot.action("changeDefaultSpins", async (ctx) => {
     adminDefaultSettings();
 
     if (isRunning) {
-        return;
+        return false;
     } else {
         isRunning = true;
-    }
-
-    try {
-        ctx.deleteMessage();
-    } catch {
-        /** do nothing */
     }
 
     if (IsAdminLogged) {
@@ -760,15 +805,9 @@ bot.action("withdrawalStatus", async (ctx) => {
     adminDefaultSettings();
 
     if (isRunning) {
-        return;
+        return false;
     } else {
         isRunning = true;
-    }
-
-    try {
-        ctx.deleteMessage();
-    } catch {
-        /** do nothing */
     }
 
     if (IsAdminLogged) {
@@ -810,15 +849,9 @@ bot.action("enableWithdrawalStatus", async (ctx) => {
     adminDefaultSettings();
 
     if (isRunning) {
-        return;
+        return false;
     } else {
         isRunning = true;
-    }
-
-    try {
-        ctx.deleteMessage();
-    } catch {
-        /** do nothing */
     }
 
     if (IsAdminLogged) {
@@ -875,15 +908,9 @@ bot.action("disableWithdrawalStatus", async (ctx) => {
     adminDefaultSettings();
 
     if (isRunning) {
-        return;
+        return false;
     } else {
         isRunning = true;
-    }
-
-    try {
-        ctx.deleteMessage();
-    } catch {
-        /** do nothing */
     }
 
     if (IsAdminLogged) {
@@ -942,15 +969,9 @@ bot.action("transactionSetting", async (ctx) => {
     adminDefaultSettings();
 
     if (isRunning) {
-        return;
+        return false;
     } else {
         isRunning = true;
-    }
-
-    try {
-        ctx.deleteMessage();
-    } catch {
-        /** do nothing */
     }
 
     if (IsAdminLogged) {
@@ -990,15 +1011,9 @@ bot.action("channelList", async (ctx) => {
     adminDefaultSettings();
 
     if (isRunning) {
-        return;
+        return false;
     } else {
         isRunning = true;
-    }
-
-    try {
-        ctx.deleteMessage();
-    } catch {
-        /** do nothing */
     }
 
     if (IsAdminLogged) {
@@ -1039,7 +1054,7 @@ bot.action("addChannel", async (ctx) => {
     adminDefaultSettings();
 
     if (isRunning) {
-        return;
+        return false;
     } else {
         isRunning = true;
     }
@@ -1083,7 +1098,7 @@ bot.action("removeChannel", async (ctx) => {
     adminDefaultSettings();
 
     if (isRunning) {
-        return;
+        return false;
     } else {
         isRunning = true;
     }
@@ -1127,7 +1142,7 @@ bot.action("selectPrimary", async (ctx) => {
     adminDefaultSettings();
 
     if (isRunning) {
-        return;
+        return false;
     } else {
         isRunning = true;
     }
@@ -1137,6 +1152,94 @@ bot.action("selectPrimary", async (ctx) => {
 
         ctx.reply("Enter Primary Channel name ");
         setPrimaryChannelAccess = true;
+    } else {
+        const result = await db.collection("users").findOne({ u_Id: ctx.chat.id });
+
+        if (result) {
+            if (result.type == "1") {
+                ctx.reply("Enter your Password to continue");
+                IsPassword = true;
+            } else {
+                ctx.reply("You are not an admin");
+            }
+        } else {
+            ctx.reply("Start game to access this bot", {
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
+                    ]
+                }
+            });
+        }
+    }
+
+    isRunning = false;
+});
+
+bot.action("successTransaction", async (ctx) => {
+    defaultSetting();
+    adminDefaultSettings();
+
+    if (isRunning) {
+        return false;
+    } else {
+        isRunning = true;
+    }
+
+    if (IsAdminLogged) {
+        resetLogoutTimeOut(ctx);
+
+        ctx.reply("Enter # id to add success status ");
+        addSuccessTransaction = true;
+    } else {
+        const result = await db.collection("users").findOne({ u_Id: ctx.chat.id });
+
+        if (result) {
+            if (result.type == "1") {
+                ctx.reply("Enter your Password to continue");
+                IsPassword = true;
+            } else {
+                ctx.reply("You are not an admin");
+            }
+        } else {
+            ctx.reply("Start game to access this bot", {
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
+                    ]
+                }
+            });
+        }
+    }
+
+    isRunning = false;
+});
+
+bot.action("failedTransaction", async (ctx) => {
+    defaultSetting();
+    adminDefaultSettings();
+
+    if (isRunning) {
+        return false;
+    } else {
+        isRunning = true;
+    }
+
+    if (IsAdminLogged) {
+        resetLogoutTimeOut(ctx);
+
+        ctx.reply("Enter # id to add failed status ");
+        addFailedTransaction = true;
     } else {
         const result = await db.collection("users").findOne({ u_Id: ctx.chat.id });
 
@@ -1506,14 +1609,12 @@ async function createPendingTransactionListLast10Table(transactionData) {
     for (const transaction of transactionData) {
         try {
             // Fetch user details
-            const userData = await db.collection("users").findOne({_id: transaction.transactionBy});
-
-            const dataX = await db.collection("users").find({_id: transaction.transactionBy}).toArray();
+            const dataX = await db.collection("users").findOne({_id: new ObjectId(transaction.transactionBy)});
 
             let userName;
 
-            if (userData) {
-                userName = userData.name 
+            if (dataX) {
+                userName = dataX.name 
             } else {
                 userName = "Unknown"
             }
@@ -1522,6 +1623,7 @@ async function createPendingTransactionListLast10Table(transactionData) {
             table += `${i.toString().padEnd(ID_WIDTH)}${transaction.upiId.toString().padEnd(UPI_ID_WIDTH)}${transaction.amount.toString().padEnd(AMOUNT_WIDTH)}${transaction.status.toString().padEnd(STATUS_WIDTH)}${userName.toString().padEnd(TRANSACTION_BY_WIDTH)}\n`;
             i++;
         } catch (error) {
+            // console.log(error);
             console.error('Error fetching user details:', error);
             table += `${i.toString().padEnd(ID_WIDTH)}${transaction.upiId.toString().padEnd(UPI_ID_WIDTH)}${transaction.amount.toString().padEnd(AMOUNT_WIDTH)}${transaction.status.toString().padEnd(STATUS_WIDTH)}Unknown\n`;
             i++;
@@ -1535,6 +1637,7 @@ async function getPendingTransactionListLast10(ctx) {
     const result = await db.collection("transactions").find({ status: "pending" }).sort({ createdAt: 1 }).limit(5).toArray();
 
     if (result.length > 0) {
+        transactionData = result;
         const transactionList = await createPendingTransactionListLast10Table(result);
 
         ctx.reply(`\`\`\`\n${transactionList}\n\`\`\``, {
@@ -1542,8 +1645,8 @@ async function getPendingTransactionListLast10(ctx) {
             reply_markup: {
                 inline_keyboard: [
                     [
-                        { text: "Success", callback_data: "Success" },
-                        { text: "Failed", callback_data: "Failed" }
+                        { text: "Success", callback_data: "successTransaction" },
+                        { text: "Failed", callback_data: "failedTransaction" }
                     ],
                     [
                         { text: "Go Back", callback_data: "gameSettings" }
