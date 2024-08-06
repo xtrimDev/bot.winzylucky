@@ -541,47 +541,42 @@ bot.action("gameSettings", async (ctx) => {
     defaultSetting();
     adminDefaultSettings();
 
-    try {
-        if (isRunning) {
-            return false;
-        } else {
-            isRunning = true;
-        }
-    
-        if (IsAdminLogged) {
-            resetLogoutTimeOut(ctx);
-            gameSettingMenu(ctx);
-        } else {
-            const result = await db.collection("users").findOne({ u_Id: ctx.chat.id });
-    
-            if (result) {
-                if (result.type == "1") {
-                    ctx.reply("Enter your Password to continue");
-                    IsPassword = true;
-                } else {
-                    ctx.reply("You are not an admin");
-                }
-            } else {
-                ctx.reply("Start game to access this bot", {
-                    reply_markup: {
-                        inline_keyboard: [
-                            [
-                                {
-                                    text: "Play Game",
-                                    url: process.env.TELE_WEB_APP_URL
-                                }
-                            ]
-                        ]
-                    }
-                });
-            }
-        }
-    
-        isRunning = false;
-    } catch(error) {
-        console.log(error)
-        console.log("Some")
+    if (isRunning) {
+        return false;
+    } else {
+        isRunning = true;
     }
+
+    if (IsAdminLogged) {
+        resetLogoutTimeOut(ctx);
+        gameSettingMenu(ctx);
+    } else {
+        const result = await db.collection("users").findOne({ u_Id: ctx.chat.id });
+
+        if (result) {
+            if (result.type == "1") {
+                ctx.reply("Enter your Password to continue");
+                IsPassword = true;
+            } else {
+                ctx.reply("You are not an admin");
+            }
+        } else {
+            ctx.reply("Start game to access this bot", {
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: "Play Game",
+                                url: process.env.TELE_WEB_APP_URL
+                            }
+                        ]
+                    ]
+                }
+            });
+        }
+    }
+
+    isRunning = false;
 });
 
 bot.action("ProfileSetting", async (ctx) => {
@@ -1623,7 +1618,6 @@ async function createPendingTransactionListLast10Table(transactionData) {
             table += `${i.toString().padEnd(ID_WIDTH)}${transaction.upiId.toString().padEnd(UPI_ID_WIDTH)}${transaction.amount.toString().padEnd(AMOUNT_WIDTH)}${transaction.status.toString().padEnd(STATUS_WIDTH)}${userName.toString().padEnd(TRANSACTION_BY_WIDTH)}\n`;
             i++;
         } catch (error) {
-            // console.log(error);
             console.error('Error fetching user details:', error);
             table += `${i.toString().padEnd(ID_WIDTH)}${transaction.upiId.toString().padEnd(UPI_ID_WIDTH)}${transaction.amount.toString().padEnd(AMOUNT_WIDTH)}${transaction.status.toString().padEnd(STATUS_WIDTH)}Unknown\n`;
             i++;
